@@ -1,25 +1,23 @@
-import React, {useState} from "react";
+import React from "react";
 import {
-    alpha,
-    Box, FormControlLabel, IconButton, Paper, Switch,
+    Box, Paper,
     Table,
     TableBody,
     TableCell, TableContainer,
     TableHead, TablePagination,
     TableRow,
-    TableSortLabel, Toolbar,
-    Tooltip,
-    Typography
+    TableSortLabel,
 } from '@mui/material';
-import { visuallyHidden } from '@mui/utils';
+import {visuallyHidden} from '@mui/utils';
 
-function createData(rank, name, points){
+function createData(ranking, navn, poeng) {
     return {
-        rank,
-        name,
-        points,
+        ranking,
+        navn,
+        poeng,
     };
 }
+
 function compareDescending(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -29,6 +27,7 @@ function compareDescending(a, b, orderBy) {
     }
     return 0;
 }
+
 function getComparator(order, orderBy) {
     return order === 'desc'
         ? (a, b) => compareDescending(a, b, orderBy)
@@ -39,7 +38,7 @@ function getComparator(order, orderBy) {
 const headers = [
     {
         id: 'ranking',
-        numeric: false,
+        numeric: true,
         disablePadding: false,
         label: 'Ranking',
     },
@@ -51,24 +50,35 @@ const headers = [
     },
 
     {
-        id: 'points',
-        numeric: false,
+        id: 'poeng',
+        numeric: true,
         disablePadding: false,
         label: 'Poeng',
     },
 ];
 
 
-const rows =[
-    createData('1', 'Sindre', '1001'),
-    createData('2', 'test', '1000'),
-    createData('3','test2', '999')
+const rows = [
+    createData(1, 'Sindre', 2000),
+    createData(2, 'test1', 1999),
+    createData(3, 'test2', 1998),
+    createData(4, 'test3', 1997),
+    createData(6, 'test4', 1000),
+    createData(7, 'test5', 999),
+    createData(8, 'test6', 998),
+    createData(9, 'test7', 997),
+    createData(10, 'test8', 996),
+    createData(11, 'test9', 995),
+    createData(12, 'test10', 994),
+    createData(13, 'test11', 993),
+
 ]
+
 function EnhancedTableHead(props) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+    const {order, orderBy, onRequestSort} =
         props;
     const createSortHandler = (property) => (event) => {
-        onRequestSort(event, property);
+        onRequestSort(event, property)
     };
 
     return (
@@ -100,70 +110,11 @@ function EnhancedTableHead(props) {
     );
 }
 
-function DeleteIcon() {
-    return null;
-}
 
-function FilterListIcon() {
-    return null;
-}
-
-function EnhancedTableToolbar(props) {
-    const { numSelected } = props;
-
-    return (
-        <Toolbar
-            sx={{
-                pl: { sm: 2 },
-                pr: { xs: 1, sm: 1 },
-                ...(numSelected > 0 && {
-                    bgcolor: (theme) =>
-                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                }),
-            }}
-        >
-            {numSelected > 0 ? (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    color="inherit"
-                    variant="subtitle1"
-                    component="div"
-                >
-                    {numSelected} selected
-                </Typography>
-            ) : (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                >
-                    Nutrition
-                </Typography>
-            )}
-
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
-        </Toolbar>
-    );
-}
-export function RankingTable(){
+export function RankingTable() {
     const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('calories');
-    const [selected, setSelected] = React.useState([]);
+    const [orderBy, setOrderBy] = React.useState('ranking');
     const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const handleRequestSort = (event, property) => {
@@ -179,90 +130,55 @@ export function RankingTable(){
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
+        console.log('naa skal det vaere så mange rows per page: ' + event.target.value)
     };
 
-    const handleChangeDense = (event) => {
-        setDense(event.target.checked);
-    };
-
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-
-        setSelected(newSelected);
-    };
 
     return (
-        <Box sx={{ width: '50%' }}>
-            <Paper sx={{ width: '100%', mb: 2 }}>
+        <Box sx={{width: '50%'}}>
+            <Paper sx={{width: '100%', mb: 2}}>
                 <TableContainer>
                     <Table
-                        sx={{ minWidth: 750 }}
+                        sx={{minWidth: 300}}
                         aria-labelledby="tableTitle"
-                        size={dense ? 'small' : 'medium'}
+                        size='medium'
                     >
                         <EnhancedTableHead
-                            numSelected={selected.length}
                             order={order}
                             orderBy={orderBy}
                             onRequestSort={handleRequestSort}
                             rowCount={rows.length}
                         />
                         <TableBody>
-                            {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                 rows.sort(getComparator(order, orderBy)).slice() */}
-                            {rows.sort(getComparator(order, orderBy)).slice()
+                            {rows.sort(getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
-                                    const labelId = `enhanced-table-checkbox-${index}`;
-
                                     return (
-                                        <TableRow
-                                            hover
-                                            onClick={(event) => handleClick(event, row.name)}
-                                            role="checkbox"
-
-                                            tabIndex={-1}
-                                            key={row.name}
-
-                                        >
+                                        <TableRow key={index}>
                                             <TableCell
                                                 component="th"
-                                                id={labelId}
+                                                id={'ranking'}
                                                 scope="row"
-                                                padding="none"
+                                                padding="normal"
                                             >
-                                                {row.rank}
+                                                {row.ranking}
                                             </TableCell>
-                                            <TableCell align="left">{row.name}</TableCell>
-                                            <TableCell align="left">{row.points}</TableCell>
+                                            <TableCell component="th"
+                                                       id={'navn'}
+                                                       scope="row"
+                                                       padding="normal"
+                                                       align="left">
+                                                {row.navn}
+                                            </TableCell>
+                                            <TableCell component="th"
+                                                       id={'poeng'}
+                                                       scope="row"
+                                                       padding="normal"
+                                                       align="left">
+                                                {row.poeng}
+                                            </TableCell>
                                         </TableRow>
                                     );
                                 })}
-                            {emptyRows > 0 && (
-                                <TableRow
-                                    style={{
-                                        height: (dense ? 33 : 53) * emptyRows,
-                                    }}
-                                >
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>

@@ -1,11 +1,13 @@
-import logo from './logo.svg';
 import './App.css';
 import {RankingTable} from "./Components/RankingTable";
+import {RegistrerSpiller} from "./Components/RegistrerSpiller";
 
 function App() {
   return (
-    <RankingTable></RankingTable>
-
+      <div>
+        <RankingTable/>
+        <RegistrerSpiller/>
+      </div>
   );
 }
 
